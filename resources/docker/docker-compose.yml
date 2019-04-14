@@ -11,7 +11,7 @@ services:
     links:
       - "postgres"
     volumes:
-      - ./code:/usr/src/app
+      - ../../../thestore:/usr/src/app/thestore
 
   postgres:
     image: postgres
