@@ -1,0 +1,36 @@
+version: '3'
+services:
+  transactor:
+    image: debiteerdevtransactor:latest
+    environment:
+      DATABASE_URL: "datomic:sql://debiteer?jdbc:postgresql://postgres:5432/datomic?user=datomic&password=datomic"
+    ports:
+      - 3000:3000
+    depends_on:
+      - "postgres"
+    links:
+      - "postgres"
+    volumes:
+      - ./code:/usr/src/app
+
+  postgres:
+    image: postgres
+    environment:
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+
+  pgadmin4:
+    image: dpage/pgadmin4
+    ports:
+      - 80:80
+    environment:
+      PGADMIN_DEFAULT_EMAIL: postgres@localhost
+      PGADMIN_DEFAULT_PASSWORD: s3cr3t
+
+
+volumes:
+  db-data:
+    driver: local
