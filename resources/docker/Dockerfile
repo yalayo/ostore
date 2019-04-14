@@ -18,10 +18,6 @@ RUN curl -u "$MY_DATOMIC_USERNAME:$MY_DATOMIC_PASSWORD" -SL https://my.datomic.c
 COPY sql-transactor-template.properties $DATOMIC_HOME/config
 
 RUN mkdir -p $APP_HOME
-WORKDIR $APP_HOME
-COPY code $APP_HOME
-
-RUN lein deps
 
 WORKDIR $DATOMIC_HOME
 
