@@ -1,7 +1,7 @@
 version: '3'
 services:
   transactor:
-    image: debiteerdevtransactor:latest
+    image: devtransactor:latest
     environment:
       DATABASE_URL: "datomic:sql://debiteer?jdbc:postgresql://postgres:5432/datomic?user=datomic&password=datomic"
     ports:
