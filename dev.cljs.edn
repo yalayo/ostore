@@ -1,0 +1,7 @@
+{:main hello-world.core}
+
+{:css-dirs ["resources/public/css"]}
+
+{:watch-dirs ["src"]}
+
+
