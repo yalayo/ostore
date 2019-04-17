@@ -6,12 +6,15 @@ services:
       DATABASE_URL: "datomic:sql://debiteer?jdbc:postgresql://postgres:5432/datomic?user=datomic&password=datomic"
     ports:
       - 3000:3000
+      - 9500:9500
     depends_on:
       - "postgres"
     links:
       - "postgres"
     volumes:
       - ../../../thestore:/usr/src/app/thestore
+      - ../../../cstutorial:/usr/src/app/cstutorial
+      - /Users/mylab/.m2/repository:/root/.m2/repository/
 
   postgres:
     image: postgres

@@ -1,4 +1,4 @@
-FROM clojure:lein-2.9.1-alpine
+FROM clojure:openjdk-8-tools-deps-alpine
 
 MAINTAINER Yunior Alayo Rondon "rondon.sarnik@gmail.com"
 
