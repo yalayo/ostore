@@ -1,4 +1,4 @@
-{:main hello-world.core}
+{:main store.core}
 
 {:css-dirs ["resources/public/css"]}
 
