@@ -14,7 +14,7 @@ services:
     volumes:
       - ../../../thestore:/usr/src/app/thestore
       - ../../../cstutorial:/usr/src/app/cstutorial
-      - /Users/mylab/.m2/repository:/root/.m2/repository/
+      - /Users/mylab/.m2/:/root/.m2/
 
   postgres:
     image: postgres

@@ -21,6 +21,8 @@ RUN mkdir -p $APP_HOME
 
 WORKDIR $DATOMIC_HOME
 
+#COPY settings.xml /root/.m2/
+
 EXPOSE 3000
 
 CMD ["sh", "-c", "java -server -Dserver.port=$PORT -cp resources:lib/*:datomic-transactor-pro-0.9.5656.jar:samples/clj:bin -Xmx1g -Xms1g -XX:+UseG1GC -XX:MaxGCPauseMillis=50 clojure.main --main datomic.launcher config/sql-transactor-template.properties", "&"]
