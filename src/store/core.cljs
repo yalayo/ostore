@@ -1,7 +1,47 @@
 (ns store.core
-  (:require [reagent.core :as r]))
+  (:require-macros [secretary.core :refer [defroute]])
+  (:import goog.history.Html5History)
+  (:require [secretary.core :as secretary]
+            [goog.events :as events]
+            [goog.history.EventType :as EventType]
+            [reagent.core :as r]))
 
-(defn checkout-component []
+(def app-state (r/atom {}))
+
+(defn hook-browser-navigation! []
+ (doto (Html5History.)
+       (events/listen
+        EventType/NAVIGATE
+        (fn [event]
+         (secretary/dispatch! (.-token event))))
+       (.setEnabled true)))
+
+(defn app-routes []
+ (secretary/set-config! :prefix "#")
+
+ (defroute "/" []
+           (swap! app-state assoc :page :home))
+
+ (defroute "/about" []
+           (swap! app-state assoc :page :about))
+
+ (defroute "/checkout" []
+           (swap! app-state assoc :page :checkout))
+
+ (hook-browser-navigation!))
+
+(defmulti current-page #(@app-state :page))
+
+(defn home []
+ [:div [:h1 "Home Page"]
+  [:a {:href "#/about"} "About page"]
+  [:a {:href "#/checkout"} "Checkout page"]])
+
+(defn about []
+ [:div [:h1 "About Page"]
+  [:a {:href "#/"} "home page"]])
+
+(defn checkout []
   [:div.container
    [:div.py-5.text-center
     [:img.d-block.mx-auto.mb-4 {:src "" :width "72" :height "72"} ]
@@ -50,10 +90,10 @@
       [:div.row
        [:div.col-md-6.mb-3
         [:label {:for "firstName"} "First name"]
-        [:input.form-control {:type "text" :id "firstName" :placeholder "" :value ""}]]
+        [:input.form-control {:type "text" :id "firstName" :placeholder ""}]]
        [:div.col-md-6.mb-3
         [:label {:for "lastName"} "Last name"]
-        [:input.form-control {:type "text" :id "lastName" :placeholder "" :value ""}]]]
+        [:input.form-control {:type "text" :id "lastName" :placeholder ""}]]]
       [:div.mb-3
        [:label {:for "address"}]
        [:input.form-control {:type "text" :id "address" :placeholder "1234 Main St"}]]
@@ -88,7 +128,7 @@
       [:button.btn.btn-primary.btn-lg.btn-block {:type "submit"} "2Checkout"]]]]
 
    [:br]
-   [:fotter.my-5.pt-5.text-muted.text-center.text-small
+   [:div.my-5.pt-5.text-muted.text-center.text-small
     [:p.mb-1 "2019 Onmycrowd"]
     [:ul.list-inline
      [:li.list-inline-item
@@ -98,8 +138,19 @@
      [:li.list-inline-item
       [:a {:href "#"} "Support"]]]]])
 
+(defmethod current-page :home []
+           [home])
+(defmethod current-page :about []
+           [about])
+(defmethod current-page :checkout []
+           [checkout])
+
+(defmethod current-page :default []
+           [:div ])
+
 (defn ^:export run []
-  (r/render [checkout-component]
-            (js/document.getElementById "app")))
+ (app-routes)
+ (r/render [current-page]
+           (js/document.getElementById "app")))
 
 (run)
