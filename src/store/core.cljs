@@ -7,7 +7,8 @@
             [goog.history.EventType :as EventType]
             [reagent.core :as r]
             [clojure.core.async :as async :refer [put! chan <! >!]]
-            [store.checkout :as co]))
+            [store.checkout :as co]
+            [store.home :as h]))
 
 (def app-state (r/atom {}))
 
@@ -38,14 +39,6 @@
  (hook-browser-navigation!))
 
 (defmulti current-page #(@app-state :page))
-
-(defn home []
- [:div [:h1 "Home Page"]
-  [:a {:href "#/about"} "About page"]
-  [:br]
-  [:a {:href "#/checkout"} "Checkout page"]
-  [:br]
-  [:a {:href "#/upaccounts"} "Upload accounts"]])
 
 (defn about []
  [:div [:h1 "About Page"]
@@ -109,7 +102,7 @@
 
 
 (defmethod current-page :home []
-           [home])
+           [h/home])
 (defmethod current-page :about []
            [about])
 (defmethod current-page :checkout []
