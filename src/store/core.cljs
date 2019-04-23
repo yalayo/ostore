@@ -1,12 +1,15 @@
 (ns store.core
-  (:require-macros [secretary.core :refer [defroute]])
+  (:require-macros [secretary.core :refer [defroute]]
+                   [cljs.core.async.macros :refer [go go-loop]])
   (:import goog.history.Html5History)
   (:require [secretary.core :as secretary]
             [goog.events :as events]
             [goog.history.EventType :as EventType]
-            [reagent.core :as r]))
+            [reagent.core :as r]
+            [clojure.core.async :as async :refer [put! chan <! >!]]))
 
 (def app-state (r/atom {}))
+
 
 (defn hook-browser-navigation! []
  (doto (Html5History.)
@@ -28,6 +31,9 @@
  (defroute "/checkout" []
            (swap! app-state assoc :page :checkout))
 
+ (defroute "/upaccounts" []
+           (swap! app-state assoc :page :upaccounts))
+
  (hook-browser-navigation!))
 
 (defmulti current-page #(@app-state :page))
@@ -35,11 +41,69 @@
 (defn home []
  [:div [:h1 "Home Page"]
   [:a {:href "#/about"} "About page"]
-  [:a {:href "#/checkout"} "Checkout page"]])
+  [:br]
+  [:a {:href "#/checkout"} "Checkout page"]
+  [:br]
+  [:a {:href "#/upaccounts"} "Upload accounts"]])
 
 (defn about []
  [:div [:h1 "About Page"]
   [:a {:href "#/"} "home page"]])
+
+(def first-file
+ (map (fn [e]
+       (let [target (.-currentTarget e)
+             file (-> target .-files (aget 0))]
+        (set! (.-value target) "")
+        file))))
+
+(def upload-reqs (chan 1 first-file))
+
+(defn put-upload [e]
+ (put! upload-reqs e))
+
+(defn upload-btn [file-name]
+ [:span.upload-label
+  [:label
+   [:input.hidden-xs-up
+    {:type "file" :accept ".csv" :on-change put-upload}]
+   [:i.fa.fa-upload.fa-lg]
+   (or file-name "click here to upload and render csv...")]
+  (when file-name
+        [:i.fa.fa-times {:on-click #(reset! app-state {})}])])
+
+
+
+(def extract-result
+ (map #(-> % .-target .-result js->clj)))
+
+
+(def file-reads (chan 1 extract-result))
+
+
+
+(go-loop []
+         (let [reader (js/FileReader.)
+               file (<! upload-reqs)]
+          (swap! app-state assoc :file-name (.-name file))
+          (set! (.-onload reader) #(put! file-reads %))
+          (.readAsText reader file)
+          (recur)))
+
+(go-loop []
+         (swap! app-state assoc :data (<! file-reads))
+         (recur))
+
+
+(defn upaccounts []
+ [:span.upload-label
+  [:label
+   [:input.hidden-xs-up
+    {:type "file" :accept ".csv" :on-change put-upload}]
+   [:i.fa.fa-upload.fa-lg]
+   (or file-name "click here to upload and render csv...")]
+  (when file-name
+        [:i.fa.fa-times {:on-click #(reset! app-state {})}])])
 
 (defn checkout []
   [:div.container
@@ -144,6 +208,9 @@
            [about])
 (defmethod current-page :checkout []
            [checkout])
+
+(defmethod current-page :upaccounts []
+           [upaccounts])
 
 (defmethod current-page :default []
            [:div ])
