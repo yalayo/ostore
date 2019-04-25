@@ -2,17 +2,20 @@
 ;; All rights reserved.
 
 {:paths ["src" "resources" "target"]
- :deps { org.clojure/clojure {:mvn/version "1.9.0"}
+ :deps { org.clojure/clojure {:mvn/version "1.10.0"}
          org.clojure/core.async {:mvn/version "0.4.490"}
-         org.clojure/clojurescript {:mvn/version "1.10.339"}
+         org.clojure/clojurescript {:mvn/version "1.10.439"}
          reagent {:mvn/version "0.9.0-SNAPSHOT"}
+         re-frame {:mvn/version "0.10.5-SNAPSHOT"}
+         binaryage/devtools {:mvn/version "0.9.10"}
          com.bhauman/figwheel-main {:mvn/version "0.2.0"}
          com.bhauman/rebel-readline-cljs {:mvn/version "0.1.4"}
          org.clojure/data.csv {:mvn/version "0.1.4"}
          environ {:mvn/version "1.1.0"}
          org.postgresql/postgresql {:mvn/version "42.2.5"}
          com.datomic/datomic-pro {:mvn/version "0.9.5656"}
-         secretary {:mvn/version "1.2.3"}}
+         clj-commons/secretary {:mvn/version "1.2.4"}
+         day8.re-frame/tracing {:mvn/version "0.5.1"}}
 
  :mvn/repos {"my.datomic.com" {:url "https://my.datomic.com/repo"}}
 
