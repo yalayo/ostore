@@ -79,7 +79,7 @@
 ;;  - the query vector supplied to query-v  (the query vector argument
 ;; to the "subscribe") and the 3rd one is for advanced cases, out of scope for this discussion.
 (fn [sorted-todos query-v _]
-  (vals sorted-todos)))
+  (vals sorted-todos))
 
 ;; So here we define the handler for another intermediate node.
 ;; This time the computation involves two input signals.

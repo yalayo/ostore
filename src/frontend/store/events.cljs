@@ -72,9 +72,18 @@
 ;; which manipulate todos.
 ;; A chain of interceptors is a vector of interceptors.
 ;; Explanation of the `path` Interceptor is given further below.
-(def todo-interceptors [check-spec-interceptor    ;; ensure the spec is still valid  (after)
+(def product-interceptors [check-spec-interceptor    ;; ensure the spec is still valid  (after)
                         (path :products)             ;; the 1st param given to handler will be the value from this path within db
                         ->local-store])            ;; write todos to localstore  (after)
+
+;; -- Helpers -----------------------------------------------------------------
+
+(defn allocate-next-id
+  "Returns the next todo id.
+  Assumes todos are sorted.
+  Returns one more than the current largest id."
+  [products]
+  ((fnil inc 0) (last (keys products))))
 
 ;; -- Event Handlers ----------------------------------------------------------
 
@@ -97,12 +106,12 @@
  :initialise-db              ;; event id being handled
 
  ;; the interceptor chain (a vector of 2 interceptors in this case)
- [(inject-cofx :local-store-todos) ;; gets todos from localstore, and puts value into coeffects arg
+ [(inject-cofx :local-store-products) ;; gets todos from localstore, and puts value into coeffects arg
   check-spec-interceptor]          ;; after event handler runs, check app-db for correctness. Does it still match Spec?
 
  ;; the event handler (function) being registered
- (fn [{:keys [db local-store-todos]} _]                  ;; take 2 values from coeffects. Ignore event vector itself.
-   {:db (assoc default-db :todos local-store-todos)}))   ;; all hail the new state to be put in app-db
+ (fn [{:keys [db local-store-products]} _]                  ;; take 2 values from coeffects. Ignore event vector itself.
+   {:db (assoc default-db :products local-store-products)}))   ;; all hail the new state to be put in app-db
 
 
 ;; usage:  (dispatch [:set-showing  :active])
@@ -150,12 +159,12 @@
 
 ;; usage:  (dispatch [:add-todo  "a description string"])
 (reg-event-db                     ;; given the text, create a new todo
- :add-todo
+ :add-product
 
  ;; Use the standard interceptors, defined above, which we
  ;; use for all todos-modifying event handlers. Looks after
  ;; writing todos to LocalStore, etc.
- todo-interceptors
+ product-interceptors
 
  ;; The event handler function.
  ;; The "path" interceptor in `todo-interceptors` means 1st parameter is the
@@ -163,47 +172,47 @@
  ;; And, further, it means the event handler returns just the value to be
  ;; put into the `[:todos]` path, and not the entire `db`.
  ;; So, againt, a path interceptor acts like clojure's `update-in`
- (fn [todos [_ text]]
-   (let [id (allocate-next-id todos)]
-     (assoc todos id {:id id :title text :done false}))))
+ (fn [products [_ text]]
+   (let [id (allocate-next-id products)]
+     (assoc products id {:id id :title text :done false}))))
 
 
 (reg-event-db
  :toggle-done
- todo-interceptors
- (fn [todos [_ id]]
-   (update-in todos [id :done] not)))
+ product-interceptors
+ (fn [products [_ id]]
+   (update-in products [id :done] not)))
 
 
 (reg-event-db
  :save
- todo-interceptors
- (fn [todos [_ id title]]
-   (assoc-in todos [id :title] title)))
+ product-interceptors
+ (fn [products [_ id title]]
+   (assoc-in products [id :title] title)))
 
 
 (reg-event-db
- :delete-todo
- todo-interceptors
+ :delete-product
+ product-interceptors
  (fn [todos [_ id]]
    (dissoc todos id)))
 
 
 (reg-event-db
  :clear-completed
- todo-interceptors
- (fn [todos _]
-   (let [done-ids (->> (vals todos)         ;; which todos have a :done of true
+ product-interceptors
+ (fn [products _]
+   (let [done-ids (->> (vals products)         ;; which todos have a :done of true
                        (filter :done)
                        (map :id))]
-     (reduce dissoc todos done-ids))))      ;; delete todos which are done
+     (reduce dissoc products done-ids))))      ;; delete todos which are done
 
 
 (reg-event-db
  :complete-all-toggle
- todo-interceptors
- (fn [todos _]
-   (let [new-done (not-every? :done (vals todos))]   ;; work out: toggle true or false?
+ product-interceptors
+ (fn [products _]
+   (let [new-done (not-every? :done (vals products))]   ;; work out: toggle true or false?
      (reduce #(assoc-in %1 [%2 :done] new-done)
-             todos
-             (keys todos)))))
+             products
+             (keys products)))))
