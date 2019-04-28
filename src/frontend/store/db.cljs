@@ -27,7 +27,7 @@
                 #(instance? PersistentTreeMap %)           ;; is a sorted-map (not just a map)
                 ))
 (s/def ::showing                                            ;; what todos are shown to the user?
-       #{:all                                                    ;; all todos are shown
+       #{:home                                                    ;; all todos are shown
          :active                                                 ;; only todos whose :done is false
          :done                                                   ;; only todos whose :done is true
          })
@@ -44,7 +44,7 @@
 
 (def default-db           ;; what gets put into app-db by default.
   {:products   (sorted-map)  ;; an empty list of products. Use the (int) :id as the key
-   :showing :all})        ;; show all todos
+   :showing :home})        ;; show all todos
 
 ;; -- Local Storage  ----------------------------------------------------------
 ;;

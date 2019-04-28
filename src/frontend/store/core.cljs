@@ -33,7 +33,7 @@
 ;;   - https://github.com/juxt/bidi
 ;; We don't have a strong opinion.
 ;;
-(defroute "/" [] (dispatch [:set-showing :all]))
+(defroute "/" [] (dispatch [:set-showing :home]))
 (defroute "/:filter" [filter] (dispatch [:set-showing (keyword filter)]))
 
 (def history
@@ -54,5 +54,5 @@
   ;; Render the UI into the HTML's <div id="app" /> element
   ;; The view function `todomvc.views/todo-app` is the
   ;; root view for the entire UI.
-  (reagent/render [store.views.home/home]
+  (reagent/render [store.views.home/current]
                   (js/document.getElementById "app")))
