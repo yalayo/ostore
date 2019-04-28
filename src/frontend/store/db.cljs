@@ -28,8 +28,8 @@
                 ))
 (s/def ::showing                                            ;; what todos are shown to the user?
        #{:home                                                    ;; all todos are shown
-         :active                                                 ;; only todos whose :done is false
-         :done                                                   ;; only todos whose :done is true
+         :signup                                                 ;; only todos whose :done is false
+         :login                                                   ;; only todos whose :done is true
          })
 (s/def ::db (s/keys :req-un [::products ::showing]))
 
