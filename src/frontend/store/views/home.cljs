@@ -2,7 +2,7 @@
   (:require [reagent.core  :as reagent]
             [re-frame.core :refer [subscribe dispatch]]
             [store.views.landing :as lp]
-            [store.views.signup :as su]))
+            [users.views.signup :as su]))
 
 (defmulti render-view (fn [v & args] v))
 

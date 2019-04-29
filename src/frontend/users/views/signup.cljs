@@ -1,4 +1,4 @@
-(ns store.views.signup
+(ns users.views.signup
   (:require [reagent.core  :as reagent]
             [re-frame.core :refer [subscribe dispatch]]))
 
