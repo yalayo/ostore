@@ -15,7 +15,8 @@
          org.postgresql/postgresql {:mvn/version "42.2.5"}
          com.datomic/datomic-pro {:mvn/version "0.9.5656"}
          clj-commons/secretary {:mvn/version "1.2.4"}
-         day8.re-frame/tracing {:mvn/version "0.5.1"}}
+         day8.re-frame/tracing {:mvn/version "0.5.1"}
+         org.jsoup/jsoup {:mvn/version "1.10.2"}}
 
  :mvn/repos {"my.datomic.com" {:url "https://my.datomic.com/repo"}}
 
