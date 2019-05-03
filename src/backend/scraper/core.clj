@@ -8,8 +8,14 @@
     (let [page (.get (Jsoup/connect url))]
       page))
 
-(defn get-elems [page tag]
+(defn get-elems
+  [page tag]
   (.select page tag))
 
-(defn show-data []
-  (count (get-elems (get-webpage "http://visas.migracion.gob.pa/SIVA/verif_citas/") "img")))
+(defn check-if-available
+  []
+  (let [imgs (count (get-elems (get-webpage "http://visas.migracion.gob.pa/SIVA/verif_citas/") "img"))]
+    (if (> imgs 2)
+      (let [links (count (get-elems (get-webpage "http://visas.migracion.gob.pa/SIVA/verif_citas/") "a"))]
+        (> links 1))
+      (> imgs 2))))

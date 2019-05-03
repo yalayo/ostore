@@ -27,9 +27,9 @@
             :tags ["api"]
 
             (GET "/opened" []
-                 :return s/Int
+                 :return s/Bool
                  :summary "Nothing specific for now"
-                 (ok (scraper/show-data))))))
+                 (ok (scraper/check-if-available))))))
 
 (run-jetty
  (wrap-defaults app site-defaults)
